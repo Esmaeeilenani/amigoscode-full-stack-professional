@@ -34,7 +34,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Slack commit message and sha
+      - name: Slack message
         run: >
             curl -X POST -H 'Content-type: application/json'
             --data '{"text":":github: https://github.com/esmaeeilenani/spring-boot-full-stack/commit/${{ github.sha }} - ${{ github.event.head_commit.message }}"}' 
@@ -58,6 +58,12 @@ jobs:
 #       the line '>> $GITHUB_OUTPUT' to export the variable from the step to github actions
         run: echo "BUILD_NUMBER=$(date '+%d.%m.%Y.%H.%M.%S')" >> $GITHUB_OUTPUT
 
+      - name: Slack message
+        run: >
+          curl -X POST -H 'Content-type: application/json'
+          --data '{"text":" :maven: Building with Maven"}' 
+          ${{ secrets.SLACK_WEBHOOK_URL }}
+
       - name: Build Package Push with Maven
         run: mvn -ntp -B verify -Ddocker.image.tag=${{steps.build-number.outputs.BUILD_NUMBER}} jib:build
 
@@ -68,6 +74,12 @@ jobs:
           sed -i -E 's_(esmaeeil/amigoscode-api:)([^"]*)_\1'${{steps.build-number.outputs.BUILD_NUMBER}}'_' Dockerrun.aws.json
           echo "Dockerrun.aws.json after updating the tag"
           cat Dockerrun.aws.json
+
+      - name: Slack message
+        run: >
+          curl -X POST -H 'Content-type: application/json'
+          --data '{"text":" :docker: Image tag:${{steps.build-number.outputs.BUILD_NUMBER}} pushed to https://hub.docker.com/repository/docker/esmaeeil/amigoscode-api"}' 
+          ${{ secrets.SLACK_WEBHOOK_URL }}
 
       - name: Deploy to Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v21
@@ -80,6 +92,12 @@ jobs:
           version_description: ${{ github.SHA }}
           region: ${{ secrets.EB_REGION }}
           deployment_package: back-end/Dockerrun.aws.json
+
+      - name: Slack message
+        run: >
+          curl -X POST -H 'Content-type: application/json'
+          --data '{"text":" application deployed to AWS"}' 
+          ${{ secrets.SLACK_WEBHOOK_URL }}
 
       - name: Commit and push Dockerrun.aws.json
         run: |
