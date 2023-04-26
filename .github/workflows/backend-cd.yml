@@ -34,12 +34,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Send GitHub Action trigger data to Slack workflow
-        id: slack
-        uses: slackapi/slack-github-action@v1.23.0
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-
       - name: Slack commit message and sha
         run: >
             curl -X POST -H 'Content-type: application/json'
