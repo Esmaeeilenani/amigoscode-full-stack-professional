@@ -1,0 +1,2 @@
+this command is to add/repalce anything after 'amigoscode/amigoscode-api:'
+sed -i -E 's_(amigoscode/amigoscode-api:)([^"]*)_\1'${{steps.build-number.outputs.BUILD_NUMBER}}'_' ../Dockerrun.aws.json
