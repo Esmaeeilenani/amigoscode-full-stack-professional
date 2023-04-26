@@ -8,7 +8,7 @@ public class PingPongController {
 
     @GetMapping("ping")
     public String getPingPong(){
-        return "pong  pong";
+        return "pong";
     }
 
 }
