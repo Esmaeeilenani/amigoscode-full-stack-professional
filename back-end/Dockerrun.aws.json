@@ -3,7 +3,7 @@
   "containerDefinitions": [
     {
       "name": "amigoscode-api",
-      "image": "esmaeeil/amigoscode-api:26.04.2023.04.35.50",
+      "image": "esmaeeil/amigoscode-api:03.05.2023.13.10.05",
       "essential": true,
       "memory": 512,
       "portMappings": [
