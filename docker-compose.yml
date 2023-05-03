@@ -1,7 +1,7 @@
 services:
   db:
     container_name: postgres
-    image: postgres:14.1
+    image: postgres:15.1
     environment:
       POSTGRES_USER: amigoscode
       POSTGRES_PASSWORD: password
@@ -15,7 +15,7 @@ services:
     restart: unless-stopped
   amigoscode-api:
     container_name: amigoscode-api
-    image: esmaeeil/amigoscode-api
+    image: esmaeeil/amigoscode-api:latest
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/customer
     ports:

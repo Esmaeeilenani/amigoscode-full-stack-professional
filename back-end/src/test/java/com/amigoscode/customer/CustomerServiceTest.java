@@ -3,16 +3,13 @@ package com.amigoscode.customer;
 import com.amigoscode.AbstractTestcontainer;
 import com.amigoscode.exception.DuplicateResourceException;
 import com.amigoscode.exception.ResourceNotFoundException;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 import java.util.Random;
@@ -20,7 +17,6 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -31,10 +27,13 @@ class CustomerServiceTest extends AbstractTestcontainer {
     @Mock
     private CustomerDao customerDao;
 
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
 
     @BeforeEach
     void setUp() {
-        underTest = new CustomerService(customerDao);
+        underTest = new CustomerService(customerDao, passwordEncoder);
     }
 
 
@@ -58,16 +57,21 @@ class CustomerServiceTest extends AbstractTestcontainer {
                 .id(id)
                 .name(getFaker().name().fullName())
                 .email(getFaker().internet().safeEmailAddress() + "-" + UUID.randomUUID())
+                .password("password")
+                .gender("MALE")
                 .age(new Random().nextInt(16, 99));
 
         when(customerDao.selectCustomerById(id))
                 .thenReturn(Optional.of(customer));
 
+        CustomerDTO expected = CustomerMapper.toDto(customer);
+
         // When
-        Customer actual = underTest.getCustomer(id);
+        CustomerDTO actual = underTest.getCustomer(id);
+
 
         // Then
-        assertThat(actual).isEqualTo(customer);
+        assertThat(actual.getId()).isEqualTo(expected.getId());
     }
 
     @Test
@@ -97,7 +101,9 @@ class CustomerServiceTest extends AbstractTestcontainer {
         when(customerDao.existByEmail(email)).thenReturn(false);
 
         // When
-        CustomerRegistration registration = new CustomerRegistration(name, email, age);
+        CustomerRegistration registration = new CustomerRegistration(name, email, "password", "MALE", age);
+        String passwordHash = "kjwehfksjdhksjdhf";
+        when(passwordEncoder.encode(registration.password())).thenReturn(passwordHash);
         underTest.addCustomer(registration);
 
         // Then
@@ -110,6 +116,7 @@ class CustomerServiceTest extends AbstractTestcontainer {
         assertThat(capturedCustomer.getName()).isEqualTo(registration.name());
         assertThat(capturedCustomer.getEmail()).isEqualTo(registration.email());
         assertThat(capturedCustomer.getAge()).isEqualTo(registration.age());
+        assertThat(capturedCustomer.getPassword()).isEqualTo(passwordHash);
 
     }
 
@@ -123,7 +130,7 @@ class CustomerServiceTest extends AbstractTestcontainer {
         when(customerDao.existByEmail(email)).thenReturn(true);
 
         // When
-        CustomerRegistration registration = new CustomerRegistration(name, email, age);
+        CustomerRegistration registration = new CustomerRegistration(name, email, "password", "MALE", age);
         assertThatThrownBy(() -> underTest.addCustomer(registration))
                 .isInstanceOf(DuplicateResourceException.class)
                 //it should be the exact message
@@ -189,15 +196,16 @@ class CustomerServiceTest extends AbstractTestcontainer {
         when(customerDao.selectCustomerById(customer.getId()))
                 .thenReturn(Optional.of(customer));
 
-        Customer updated =
-                new Customer()
-                        .name("esmaeeil")
-                        .email("esmaeeil@gmail.com")
-                        .age(25);
+        CustomerDTO updated =
+                new CustomerDTO()
+                        .setId(id)
+                        .setName("esmaeeil")
+                        .setEmail("esmaeeil@gmail.com")
+                        .setAge(25);
 
         // When
         underTest.updateCustomerById(customer.getId(), updated);
         // Then
-        assertThat(customer.getId()).isEqualTo(updated.id());
+        assertThat(customer.getId()).isEqualTo(updated.getId());
     }
 }

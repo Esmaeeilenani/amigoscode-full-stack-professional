@@ -1,10 +1,11 @@
 package com.amigoscode.customer;
 
 
-import com.amigoscode.exception.DuplicateResourceException;
-import org.apache.coyote.Response;
+import com.amigoscode.jwt.JWTUtil;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,33 +15,39 @@ import java.util.List;
 public class CustomerController {
 
     private final CustomerService customerService;
+    private final JWTUtil jwtUtil;
 
-    public CustomerController(CustomerService customerService) {
+
+    public CustomerController(CustomerService customerService, JWTUtil jwtUtil) {
         this.customerService = customerService;
+        this.jwtUtil = jwtUtil;
+
     }
 
 
     @GetMapping
-    public List<Customer> getCustomers() {
+    public List<CustomerDTO> getCustomers() {
         return customerService.getAllCustomers();
     }
 
 
     @GetMapping("{customerId}")
-    public Customer getCustomer(@PathVariable("customerId") Integer customerId) {
+    public CustomerDTO getCustomer(@PathVariable("customerId") Integer customerId) {
         return customerService.getCustomer(customerId);
     }
 
     @PostMapping
-    public ResponseEntity<Void> registerCustomer(@RequestBody CustomerRegistration customerRegistration){
+    public ResponseEntity<String> registerCustomer(@RequestBody CustomerRegistration customerRegistration) {
         customerService.addCustomer(customerRegistration);
+        String token = jwtUtil.issueToken(customerRegistration.email(), "ROLE_USER");
         return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .build();
+                .ok(token);
+
+
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Void> updateCustomer(@PathVariable Integer id ,@RequestBody Customer customer){
+    public ResponseEntity<Void> updateCustomer(@PathVariable Integer id, @RequestBody CustomerDTO customer) {
 
         customerService.updateCustomerById(id, customer);
 
@@ -48,7 +55,7 @@ public class CustomerController {
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<Void> deleteCustomer(@PathVariable Integer id){
+    public ResponseEntity<Void> deleteCustomer(@PathVariable Integer id) {
         customerService.deleteCustomerById(id);
 
         return ResponseEntity.ok().build();

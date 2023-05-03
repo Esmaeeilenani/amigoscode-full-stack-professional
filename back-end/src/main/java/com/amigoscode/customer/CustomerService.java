@@ -3,6 +3,7 @@ package com.amigoscode.customer;
 import com.amigoscode.exception.DuplicateResourceException;
 import com.amigoscode.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,15 +14,26 @@ public class CustomerService {
 
     private final CustomerDao customerDao;
 
-    public CustomerService(@Qualifier("jpa") CustomerDao customerDao) {
+    private final PasswordEncoder passwordEncoder;
+
+    public CustomerService(@Qualifier("jpa") CustomerDao customerDao, PasswordEncoder passwordEncoder) {
         this.customerDao = customerDao;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    public List<Customer> getAllCustomers() {
-        return customerDao.selectAllCustomers();
+    public List<CustomerDTO> getAllCustomers() {
+        return CustomerMapper.toDto(customerDao.selectAllCustomers());
     }
 
-    public Customer getCustomer(Integer id) {
+    public CustomerDTO getCustomer(Integer id) {
+        return customerDao.selectCustomerById(id)
+                .map(CustomerMapper::toDto)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "customer with id [%s] not found".formatted(id)
+                ));
+    }
+
+    public Customer findCustomer(Integer id) {
         return customerDao.selectCustomerById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "customer with id [%s] not found".formatted(id)
@@ -38,6 +50,8 @@ public class CustomerService {
         Customer customer = new Customer()
                 .name(customerRegistration.name())
                 .email(customerRegistration.email())
+                .password(passwordEncoder.encode(customerRegistration.password()))
+                .gender("MALE")
                 .age(customerRegistration.age());
 
         customerDao.insertCustomer(customer);
@@ -55,16 +69,16 @@ public class CustomerService {
         customerDao.deleteById(id);
     }
 
-    public void updateCustomerById(Integer id, Customer customer) {
-        Customer oldCustomer = getCustomer(id);
-        if (!oldCustomer.getEmail().equals(customer.email()) &&
+    public void updateCustomerById(Integer id, CustomerDTO customer) {
+        Customer oldCustomer = findCustomer(id);
+        if (!oldCustomer.getEmail().equals(customer.getEmail()) &&
                 customerDao.existByEmail(customer.getEmail())) {
             throw new DuplicateResourceException("email already exists");
         }
+        Customer updated = CustomerMapper.toEntity(customer);
+        updated.password(oldCustomer.password());
 
-
-        customer.id(id);
-        customerDao.updateCustomer(customer);
+        customerDao.updateCustomer(updated);
     }
 
 }

@@ -32,6 +32,8 @@ class CustomerRepositoryTest extends AbstractTestcontainer {
         Customer customer = new Customer()
                 .name(getFaker().name().fullName())
                 .email(getFaker().internet().safeEmailAddress() + "-" + UUID.randomUUID())
+                .password("password")
+                .gender("MALE")
                 .age(new Random().nextInt(16, 99));
         underTest.save(customer);
 
