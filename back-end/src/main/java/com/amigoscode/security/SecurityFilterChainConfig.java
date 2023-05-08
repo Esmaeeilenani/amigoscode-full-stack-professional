@@ -39,6 +39,8 @@ public class SecurityFilterChainConfig {
                 .permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/v1/customers")
                 .permitAll()
+                .requestMatchers(HttpMethod.GET, "/actuator/**")
+                .permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()
