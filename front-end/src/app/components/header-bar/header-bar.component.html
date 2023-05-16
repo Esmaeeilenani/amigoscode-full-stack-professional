@@ -1,0 +1,43 @@
+<div class="flex flex-column align-items-end border-bottom-1 border-gray-200 pt-3 pb-3 mr-3">
+  <div class="flex flex-row align-items-center">
+    <button
+      pButton
+      pRipple
+      type="button"
+      icon="pi pi-bell"
+      class="p-button-rounded p-button-secondary p-button-outlined mx-3"
+    ></button>
+
+    <p-avatar
+      image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png"
+      size="small"
+      shape="circle"
+      class="mx-3"
+    >
+    </p-avatar>
+    <div class="mx-3">
+      <p class="text-base mb-0 mt-1 text-gray-700">
+        esmaeeil@email.com
+      </p>
+      <p class="text-sm mb-1 mt-0 text-gray-500">
+        ROLE_ADMIN
+      </p>
+
+    </div>
+
+    <div>
+      <button
+      pButton
+      pRipple
+      icon="pi pi-angle-down"
+      class="p-button-secondary p-button-text "
+      (click)="menu.toggle($event)"
+      >
+      </button>
+      <p-menu #menu [model]="items" [popup]="true"></p-menu>
+
+    </div>
+
+
+  </div>
+</div>

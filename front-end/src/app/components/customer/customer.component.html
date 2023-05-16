@@ -1,0 +1,33 @@
+<p-sidebar [(visible)]="displaySideBar"
+           position="right"
+           styleClass="p-sidebar-lg"
+           transitionOptions="200ms"
+>
+  <app-manage-customer></app-manage-customer>
+</p-sidebar>
+
+<div class="flex align-items-stretch "
+     style="height: 99vh;">
+
+  <div class="border-right-1 col-2 border-gray-200">
+    <app-menu-bar></app-menu-bar>
+  </div>
+
+  <div class="flex flex-column flex-grow-1">
+    <app-header-bar></app-header-bar>
+
+    <div class="main-container p-3">
+      <button
+        pButton
+        icon="pi pi-plus"
+        label="Create Customer"
+        class=" p-button-success"
+        (click)=" displaySideBar = true"
+      ></button>
+      <main> customers display list</main>
+    </div>
+
+  </div>
+
+
+</div>
