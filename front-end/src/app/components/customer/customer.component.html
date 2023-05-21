@@ -3,7 +3,7 @@
            styleClass="p-sidebar-lg"
            transitionOptions="200ms"
 >
-  <app-manage-customer></app-manage-customer>
+  <app-manage-customer (submitCustomer)="saveCustomer($event)"></app-manage-customer>
 </p-sidebar>
 
 <div class="flex align-items-stretch "
@@ -24,10 +24,15 @@
         class=" p-button-success"
         (click)=" displaySideBar = true"
       ></button>
-      <main> customers display list</main>
+      <div class="flex justify-content-center align-items-center flex-wrap gap-5 mt-5">
+        <app-customer-card *ngFor="let customer of customers; let i = index"
+                           [customer]="customer" [cusIndex]="i">
+        </app-customer-card>
+      </div>
     </div>
 
   </div>
 
 
 </div>
+<p-toast></p-toast>

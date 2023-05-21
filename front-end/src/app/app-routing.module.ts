@@ -7,6 +7,9 @@ import {PublicGuard} from "./services/guard/public.guard";
 
 const routes: Routes = [
   {
+    path:"", pathMatch:"full", redirectTo:"/login"
+  },
+  {
     path:"customers", component:CustomerComponent ,canActivate:[PrivateGuard]
   },
   {

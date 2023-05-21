@@ -1,74 +1,89 @@
 <div>
   <h2> Title</h2>
+  <form [formGroup]="form">
 
-  <div class="field">
-    <label for="firstname">Name</label>
-    <input
-      id="firstname"
-      pInputText
-      placeholder="Jane"
-      type="text"
+    <div class="field">
+      <label for="firstname">Name <span class="text-red-600 font-bold text-lg">*</span></label>
+      <input
+        formControlName="name"
+        id="firstname"
+        pInputText
+        placeholder="Jane"
+        type="text"
+        class="w-full"
+      >
+      <small *ngIf="showControlError('name')" class="p-error">Username is not available.</small>
+    </div>
+
+    <div class="field">
+      <label for="email">Email <span class="text-red-600 font-bold text-lg">*</span></label>
+      <input
+        formControlName="email"
+        id="email"
+        pInputText
+        placeholder="Jane@example.com"
+        type="email"
+        class="w-full"
+      >
+      <small *ngIf="showControlError('email')" class="p-error">Wrong email format</small>
+    </div>
+
+
+    <div class="field">
+      <label for="age">Age</label>
+      <input
+        formControlName="age"
+        id="age"
+        pInputText
+        placeholder="25"
+        type="text"
+        class="w-full"
+      >
+      <small *ngIf="showControlError('age')" class="p-error">Wrong Age format</small>
+    </div>
+    <div class="field flex flex-column">
+      <label for="gender">Gender</label>
+      <p-dropdown
+        formControlName="gender"
+        [options]="gender"  placeholder="Select Gender"
+        id="gender"
+        styleClass="w-full"
+      >
+      </p-dropdown>
+
+      <small *ngIf="showControlError('gender')" class="p-error">Please select a gender</small>
+    </div>
+
+    <div class="field">
+      <label for="password">Password <span class="text-red-600 font-bold text-lg">*</span></label>
+      <input
+        formControlName="password"
+        id="password"
+        pInputText
+        placeholder="password"
+        type="password"
+        class="w-full"
+        pTooltip="password should be at least 8 characters" tooltipPosition="right"
+      >
+      <small *ngIf="showControlError('password')" class="p-error">please enter the password in correct format </small>
+    </div>
+    <button
+      pButton
+      label="submit"
+      type="submit"
       class="w-full"
+      (click)="submitUser()"
     >
-  </div>
+    </button>
 
-  <div class="field">
-    <label for="email">Email</label>
-    <input
-      id="email"
-      pInputText
-      placeholder="Jane@example.com"
-      type="email"
-      class="w-full"
+    <button
+      pButton
+      label="cancel"
+      type="reset"
+      class="w-full p-button-outlined p-button-danger mt-3"
     >
-  </div>
+    </button>
 
-
-  <div class="field">
-    <label for="age">Age</label>
-    <input
-      id="age"
-      pInputText
-      placeholder="25"
-      type="number"
-      class="w-full"
-    >
-  </div>
-  <div class="field flex flex-column">
-    <label for="gender">Gender</label>
-    <p-dropdown
-      [options]="gender" [(ngModel)]="selectedGender" placeholder="Select Gender"
-      id="gender"
-      styleClass="w-full"
-    >
-    </p-dropdown>
-  </div>
-
-  <div class="field">
-    <label for="password">Password</label>
-    <input
-      id="password"
-      pInputText
-      placeholder="password"
-      type="password"
-      class="w-full"
-    >
-  </div>
-  <button
-    pButton
-    label="submit"
-    type="submit"
-    class="w-full"
-  >
-  </button>
-
-  <button
-    pButton
-    label="cancel"
-    type="reset"
-    class="w-full p-button-outlined p-button-danger mt-3"
-  >
-  </button>
-
+  </form>
 </div>
 

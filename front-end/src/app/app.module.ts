@@ -21,6 +21,11 @@ import { LoginComponent } from './components/login/login.component';
 import {HttpClientModule} from "@angular/common/http";
 import {MessageModule} from "primeng/message";
 import { MessagesModule } from 'primeng/messages';
+import {AuthInterceptorProvider} from "./services/interceptor/auth.interceptor";
+import { CustomerCardComponent } from './components/customer-card/customer-card.component';
+import {CardModule} from "primeng/card";
+import {BadgeModule} from "primeng/badge";
+import {ToastModule} from "primeng/toast";
 
 
 @NgModule({
@@ -31,7 +36,8 @@ import { MessagesModule } from 'primeng/messages';
     MenuItemComponent,
     HeaderBarComponent,
     ManageCustomerComponent,
-    LoginComponent
+    LoginComponent,
+    CustomerCardComponent
   ],
   imports: [
     BrowserModule,
@@ -49,9 +55,12 @@ import { MessagesModule } from 'primeng/messages';
     ReactiveFormsModule,
     HttpClientModule,
     MessageModule,
-    MessagesModule
+    MessagesModule,
+    CardModule,
+    BadgeModule,
+    ToastModule
   ],
-  providers: [],
+  providers: [AuthInterceptorProvider],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
